@@ -28,10 +28,7 @@ export default class ExpressServer {
       bodyParser.json({ limit: process.env.REQUEST_LIMIT || '100kb' })
     );
     this.app.use(
-      bodyParser.urlencoded({
-        limit: process.env.REQUEST_LIMIT || '100kb',
-        extended: true,
-      })
+      bodyParser.urlencoded({ limit: process.env.REQUEST_LIMIT || '100kb', extended: true, })
     );
     this.app.use(
       bodyParser.text({ limit: process.env.REQUEST_LIMIT || '100kb' })

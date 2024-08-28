@@ -21,25 +21,19 @@ interface User {
 
 export var AuthenticatedUser = 'Administrator';
 
-const all = (): Promise<User[]> =>
-  new Promise<User[]>((resolve, _reject) => {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+const all = (): Promise<User[]> => new Promise<User[]>((resolve, _reject) => {
     const govc_sso_user_ls = require('child_process').spawn(
-      "\
-      export GOVC_URL='https://192.168.10.113' && export GOVC_INSECURE='true' && \
+      `export GOVC_URL='https://192.168.10.113' && export GOVC_INSECURE='true' && \
       export GOVC_USERNAME='administrator@vsphere.local' && export GOVC_PASSWORD='ZAQ!xsw2' && \
-      govc sso.user.ls -json=true -group Administrators | jq -c \
-      ",
+      govc sso.user.ls -json=true -group Administrators | jq -c`,
       { shell: true }
     );
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     govc_sso_user_ls.stderr.on('data', (data: any) => {
       L.info('govc_sso_user_ls stderr: ' + data.toString());
     });
 
     let virtmanUsers: User[] = [];
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     govc_sso_user_ls.stdout.on('data', (data: any) => {
       //L.info('govc_sso_user_ls stdout: ' + data.toString());
 
@@ -50,20 +44,19 @@ const all = (): Promise<User[]> =>
         );
       }
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     govc_sso_user_ls.on('exit', (exitCode: any) => {
       L.info(`Xcode: ${exitCode}, resolv --> virtmanUsers: ${JSON.stringify(virtmanUsers)}`);
       resolve(virtmanUsers);
     });
-  });
-const one = (USERNAME: string): Promise<User> =>
-  new Promise<User>((resolve, reject) => {
+});
+
+const one = (USERNAME: string): Promise<User> => new Promise<User>((resolve, reject) => {
     all().then((us) => {
       const filterResult = us.filter((u) => u.Id.Name == USERNAME);
       if (filterResult.length > 0) resolve(filterResult[0]);
       else reject(`User ${USERNAME} not found`);
     });
-  });
+});
 
 const add = (USERNAME: string, PASSWORD: string): Promise<User> =>
   new Promise<User>((resolve, reject) => {
@@ -159,7 +152,6 @@ const login = (USERNAME: string, PASSWORD: string): Promise<string> =>
     });
   });
 
-// TODO Logout need to delete all the sessions for the login out user: govc session.rm 527f03ad-c2b0-d4a6-8776-3023799b5237
 
 export default express.Router()
   .get('/', (_req: Request, res: Response) => {
@@ -171,42 +163,42 @@ export default express.Router()
     });
   })
   .get('/:USERNAME', (req: Request, res: Response) => {
-    one(req.params['USERNAME']).then(
-      (u) => res.status(200).json(u),
-      (e) => res.status(404).end(e)
-    );
-  })
+      one(req.params['USERNAME']).then(
+        (u) => res.status(200).json(u),
+        (e) => res.status(404).end(e)
+      );
+    })
   .post('/', (req: Request, res: Response) => {
-    add(req.body.USERNAME, req.body.PASSWORD).then(
-      (u) => res.status(201).json(u),
-      (e) => res.status(400).end(e)
-    );
-  })
-.delete('/:USERNAME', (req: Request, res: Response) => {
-  del(req.params['USERNAME']).then(
-    (us) => res.status(200).json(us),
-    (e) => res.status(404).end(e)
-  );
-})
-.post('/login', (req: Request, res: Response) => {
-  login(req.body.USERNAME, req.body.PASSWORD).then(
-    (USERNAME) => {
-      AuthenticatedUser = USERNAME;
-      res.status(201).send(`${USERNAME} Authenticated`);
-      L.info(`${req.body.USERNAME} Authenticated`);
-    },
-    (e) => {
-      res.status(400).end(e);
-      L.error(`${req.body.USERNAME} could not be Authenticated`);
-    }
-  );
-})
-.post('/logout', (_req: Request, res: Response) => {
-  if (AuthenticatedUser != 'Administrator') {
-    res.status(201).send(`${AuthenticatedUser} Loged out`);
-    L.info(
-      `${AuthenticatedUser} Loged out, current authenticated user: Administrator`
-    );
-    AuthenticatedUser = 'Administrator';
-  } else res.status(400).send(`There was no user authenticated`);
-});
+      add(req.body.USERNAME, req.body.PASSWORD).then(
+        (u) => res.status(201).json(u),
+        (e) => res.status(400).end(e)
+      );
+    })
+  .delete('/:USERNAME', (req: Request, res: Response) => {
+      del(req.params['USERNAME']).then(
+        (us) => res.status(200).json(us),
+        (e) => res.status(404).end(e)
+      );
+    })
+  .post('/login', (req: Request, res: Response) => {
+      login(req.body.USERNAME, req.body.PASSWORD).then(
+        (USERNAME) => {
+          AuthenticatedUser = USERNAME;
+          res.status(201).send(`${USERNAME} Authenticated`);
+          L.info(`${req.body.USERNAME} Authenticated`);
+        },
+        (e) => {
+          res.status(400).end(e);
+          L.error(`${req.body.USERNAME} could not be Authenticated`);
+        }
+      );
+    })
+  .post('/logout', (_req: Request, res: Response) => {
+      if (AuthenticatedUser != 'Administrator') {
+        res.status(201).send(`${AuthenticatedUser} Loged out`);
+        L.info(
+          `${AuthenticatedUser} Loged out, current authenticated user: Administrator`
+        );
+        AuthenticatedUser = 'Administrator';
+      } else res.status(400).send(`There was no user authenticated`);
+    });
