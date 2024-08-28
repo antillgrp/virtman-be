@@ -4,5 +4,5 @@ services:
     image: "antillgrp/virtman-be"
     ports:
       - "3000:3000"
-      - "443:3443"
+      - "3443:3443"
     network_mode: "host"
