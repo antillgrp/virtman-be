@@ -1,0 +1,218 @@
+openapi: 3.0.1
+info:
+  title: virtman-be
+  description: Team Virtualization Manager
+  version: 1.0.0
+servers:
+- url: /api
+tags:
+- name: Specification
+  description: The swagger API specification
+- name: Users
+  description: Simple user endpoints
+# - name: Examples
+#   description: Simple example endpoints
+
+# https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#server_error_responses
+
+paths:
+  /spec:
+    get:
+      tags:
+      - Specification
+      responses:
+        200:
+          description: Return the API specification
+          content: {}
+  
+  /users:
+    get:
+      tags:
+      - Users
+      description: Fetch all users
+      responses:
+        200:
+          description: Returns all users
+          content: {}
+    post:
+      tags:
+      - Users
+      description: Create a new user
+      requestBody:
+        description: a user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserBody'
+        required: true
+      responses:
+        201:
+          description: Returns the user just created
+          content: {}
+        400:
+          description: Error happened creating the user
+          content: {}
+
+  /users/{USERNAME}:
+    get:
+      tags:
+      - Users
+      parameters:
+      - name: USERNAME
+        in: path
+        description: The USERNAME of the user to retrieve
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Return the user with the specified USERNAME
+          content: {}
+        404:
+          description: User with USERNAME not found
+          content: {}
+    delete:
+      tags:
+      - Users
+      parameters:
+      - name: USERNAME
+        in: path
+        description: The name of the user to delete
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Return users after target user deleted
+          content: {}
+        404:
+          description: User to be deleted not found
+          content: {}
+  
+  /users/login:
+    post:
+      tags:
+      - Users
+      description: Authtenticate a user
+      requestBody:
+        description: user to be authtenticated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserBody'
+        required: true
+      responses:
+        201:
+          description: The user could be authenticated
+          content: {}
+        400:
+          description: The user could not be authenticated
+          content: {}
+
+  /users/logout:
+    post:
+      tags:
+      - Users
+      description: Unauthtenticate the authenticated user
+      responses:
+        201:
+          description: The user could be unauthenticated
+          content: {}
+        400:
+          description: There was no user authenticated
+          content: {}
+
+  /vms:
+    get:
+      tags:
+      - VMs
+      description: Fetch all vms of authtenticated user 
+      responses:
+        200:
+          description: Returns all vms of authtenticated user
+          content: {}
+    post:
+      tags:
+      - VMs
+      description: Create a new vm of authtenticated user
+      requestBody:
+        description: a vm
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VMBody'
+        required: true
+      responses:
+        201:
+          description: Returns the vm just created
+          content: {}
+        400:
+          description: Error (check _error response header)
+          content: {} 
+
+  /vms/{VMNAME}:
+    get:
+      tags:
+      - VMs
+      description: Fetch vm <b>"VMNAME"</b> of authtenticated user 
+      parameters:
+      - name: VMNAME
+        in: path
+        description: The name of the vm of authtenticated user to search
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Return vm <b>"VMNAME"</b> of authtenticated user
+          content: {}
+        404:
+          description: Error fetching <b>"VMNAME"</b>. (check _error response header)
+          content: {}
+
+    delete:
+      tags:
+      - VMs
+      description: Deletes vm <b>"VMNAME"</b> of authtenticated user 
+      parameters:
+      - name: VMNAME
+        in: path
+        description: The name of the vm to delete
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Return the vms left after <b>"VMNAME"</b> deletion
+          content: {}
+        404:
+          description: Error deleting <b>"VMNAME"</b>. (check _error response header)
+          content: {}
+
+
+components:
+  schemas:
+
+    UserBody:
+      title: user
+      type: object
+      required:
+      - USERNAME
+      - PASSWORD
+      properties:
+        USERNAME:
+          type: string
+          example: virtman1
+        PASSWORD:
+          type: string
+          example: xsw2CDE#vfr4
+
+    VMBody:
+      title: vm
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          example: web-server1
