@@ -1,7 +1,7 @@
 FROM node:14-alpine
 LABEL Gerson Ramirez Pedre <antillgrp@gmail.com>
 
-RUN curl -L -o - "https://github.com/vmware/govmomi/releases/latest/download/govc_$(uname -s)_$(uname -m).tar.gz" | tar -C /usr/local/bin -xvzf - govc && govc version > govc_version.txt
+RUN 'curl -L -o - "https://github.com/vmware/govmomi/releases/latest/download/govc_$(uname -s)_$(uname -m).tar.gz" | tar -C /usr/local/bin -xvzf - govc'
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
