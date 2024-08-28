@@ -1,4 +1,4 @@
-name: ci
+name: 'On push to main > dkr build > dkr push'
 
 on:
   push:
