@@ -1,6 +1,10 @@
 FROM node:14-alpine
 LABEL Gerson Ramirez Pedre <antillgrp@gmail.com>
 
+
+RUN apk --update add curl
+RUN apk --update add jq
+
 RUN 'curl -L -o - "https://github.com/vmware/govmomi/releases/latest/download/govc_$(uname -s)_$(uname -m).tar.gz" | tar -C /usr/local/bin -xvzf - govc'
 
 RUN mkdir -p /usr/src/app
