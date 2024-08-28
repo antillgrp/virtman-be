@@ -6,7 +6,7 @@ RUN apk --no-cache --update add curl
 RUN apk --no-cache --update add jq
 
 #RUN uname -s | tee -a uname.txt && uname -m | tee -a uname.txt
-RUN curl -L -o - "https://github.com/vmware/govmomi/releases/latest/download/govc_linux_x86_64.tar.gz" | tar -C /usr/local/bin -xvzf - govc'
+RUN curl -L -o - "https://github.com/vmware/govmomi/releases/latest/download/govc_linux_x86_64.tar.gz" | tar -C /usr/local/bin -xvzf - govc
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
