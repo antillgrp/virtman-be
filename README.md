@@ -66,9 +66,9 @@ npm run test:debug
 
 ## Try It
 * Open your browser to [http://localhost:3000](http://localhost:3000)
-* Invoke the `/examples` endpoint 
+* Invoke the `/users` endpoint 
   ```shell
-  curl http://localhost:3000/api/examples
+  curl http://localhost:3000/api/users
   ```
 
 
